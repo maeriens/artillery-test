@@ -1,0 +1,49 @@
+config:
+  target: 'https://reqres.in/api'
+  plugins:
+    expect: {}
+  phases:
+  - name: 'Start test'
+    duration: 10
+    arrivalRate: 2
+  - name: 'Gentle!'
+    duration: 5
+    arrivalRate: 3
+scenarios:
+  - name: 'Get Fuchsia Rose'
+    weight: 2
+    flow: 
+    - get:
+        url: '/unknown/2'
+        capture: 
+          - json: "$.data.name"
+            as: colorName
+        expect:
+          - statusCode: 200
+          - contentType: json
+          - hasProperty: data
+          - hasProperty: data.id
+          - hasProperty: data.name
+          - equals:
+            - "{{ colorName }}"
+            - "fuchsia rose"
+  - name: 'Get True Red'
+    weight: 1
+    flow:
+     - get: 
+        url: '/unknown/3'
+        capture: 
+          - json: "$.data.id"
+            as: colourId
+          - json: "$.data.year"
+            as: colourYear
+        expect: 
+        - statusCode: 200
+        - contentType: "application/json; charset=utf-8"
+        - equals:
+          - "{{ colourId }}"
+          - 3
+        - equals:
+          - "{{ colourYear }}"
+          - 2002
+          

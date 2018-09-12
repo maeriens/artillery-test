@@ -1,0 +1,27 @@
+config:
+  target: 'https://api.pokemontcg.io/v1/'
+  plugins:
+    expect: {}
+  phases:
+  - name: 'Start test'
+    duration: 1
+    arrivalRate: 1
+scenarios:
+  - name: 'Token API get'
+    flow: 
+    - post: 
+        url: '/cards'
+        capture:
+          - json: "$.error.message"
+            as: "errorMessage"
+          - json: "$.error.code"
+            as: "errorCode"
+        expect:
+        - statusCode: 401
+        - contentType: json
+        - equals:
+          - "Unauthorized Request. The requsted resource either does not exist, or you are not allowed to access it."
+          - "{{ errorMessage }}"
+        - equals:
+          - 401
+          - "{{ errorCode }}"

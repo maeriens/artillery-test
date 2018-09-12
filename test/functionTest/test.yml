@@ -1,0 +1,48 @@
+config:
+  target: 'https://reqres.in/api'
+  timeout: 100000
+  plugins:
+    expect: {}
+    fuzzer: {}
+  http:
+    pool: 5
+  phases:
+  - name: 'Warm up'
+    duration: 10
+    arrivalRate: 1
+  - name: 'Normal Day'
+    duration: 30
+    arrivalRate: 15
+  - name: 'Hot Sale'
+    duration: 30
+    arrivalRate: 50
+  processor: './random.js'
+scenarios:
+  - name: 'Get an user'
+    flow: 
+    - function: 'getRandomData'
+    - log: 'Random generated user/job: {{ name }}, {{ job }}'
+    - post:
+        url: '/users'
+        headers:
+          Content-Type: 'application/json'
+        json:
+          name: '{{ name }}'
+          job: '{{ job }}'
+        capture:
+          - json: '$.name'
+            as: responseName
+          - json: '$.id'
+            as: id
+        expect:
+          - statusCode: 201
+          - contentType: json
+          - equals:
+            - '{{ name }}'
+            - '{{ responseName }}'
+    - log: 'Captured ID: {{ id }}' 
+    - get:
+        url: '/users/{{ id }}'
+    - log: 'Now using a naughty string from fuzzer'
+    - get:
+        url: '/users/{{ naughtyString }}'

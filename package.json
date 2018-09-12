@@ -1,0 +1,16 @@
+{
+  "name": "artillery-poc",
+  "version": "0.1.0",
+  "description": "A test to try out Artillery as a stressing tool",
+  "main": "",
+  "scripts": {
+    "test": "artillery"
+  },
+  "author": "Maeriens",
+  "license": "ISC",
+  "dependencies": {
+    "artillery": "^1.6.0-23",
+    "artillery-plugin-expect": "^1.1.0",
+    "artillery-plugin-fuzzer": "^1.0.1"
+  }
+}

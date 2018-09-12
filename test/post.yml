@@ -1,0 +1,59 @@
+config:
+  target: 'https://reqres.in/api'
+  plugins:
+    expect: {}
+  phases:
+  - name: 'Start test'
+    duration: 5
+    arrivalRate: 1
+  - name: 'Create some more!'
+    duration: 10
+    arrivalRate: 3
+scenarios:
+  - weight: 2
+    flow: 
+    - post:
+        name: 'Missing Password!'
+        url: '/login'
+        json:
+          email: 'test@test.com'
+        capture:
+          - json: "$.error"
+            as: error
+        expect:
+          - statusCode: 400
+          - contentType: json
+          - hasProperty: error
+          - equals:
+            - "{{ error }}"
+            - "Missing password"
+  - weight: 1
+    flow:
+     - post:
+        name: 'Empty body!' 
+        url: '/login'
+        capture:
+        - json: "$.error"
+          as: error
+        expect:
+          - statusCode: 400
+          - contentType: json
+          - hasProperty: error
+          - equals:
+            - "{{ error }}"
+            - "Missing email or username"
+  - weight: 3
+    flow:
+     - post:
+        name: 'A PROPER LOGIN!' 
+        url: '/login'
+        json:
+          email: "test@test.com"
+          password: "yes"
+        capture:
+        - json: "$.token"
+          as: token
+        expect:
+          - statusCode: 200
+          - contentType: json
+          - hasProperty: token
